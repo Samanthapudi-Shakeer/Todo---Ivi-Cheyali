@@ -30,7 +30,7 @@ In telugu my native ...
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/Samanthapudi-Shakeer/Todo---Ivi-Cheyali
+   git clone https://github.com/Samanthapudi-Shakeer/Todo-Ivi-Cheyali
    cd ivi-cheyaliii
    ```
 ## Dependencies
