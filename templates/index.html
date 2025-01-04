@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shakeer's Tasks</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #05052b;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            text-align: center;
+            color: whitesmoke;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        .task-form {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+            background-color: #353558;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+        .task-form input[type="text"], 
+        .task-form input[type="date"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 200px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        .task-form input[type="text"]:focus, 
+        .task-form input[type="date"]:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+        .task-form button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: #353558;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .task-form button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+        .task-list {
+            margin: 20px auto;
+            max-width: 600px;
+            width: 100%;
+            text-align: center; /* Center the text in the list */
+        }
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            background: radial-gradient(circle, #414153, #05052b);
+            border: 3px solid #353558;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        .task-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        .task-item strong {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .task-item span {
+            color: rebeccapurple;
+            font-size: 14px;
+        }
+        .task-item button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .task-item button:hover {
+            background-color: darkred;
+            border: 3px red dotted;
+            transform: scale(1.05);
+        }
+        .no-tasks {
+            text-align: center;
+            color: red;
+            font-weight: bold;
+        }
+        .urgent {
+            color: red;
+            font-weight: bold;
+        }
+        .flashes {
+            list-style-type: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        .flashes li {
+            color: red; /* Change color as needed */
+            font-weight: bold;
+        }
+    </style>
+    <script>
+        // Function to set the minimum date to today
+        function setMinDate() {
+            const today = new Date();
+            const dd = String(today.getDate()).padStart(2, '0');
+            const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+            const yyyy = today.getFullYear();
+            const minDate = `${yyyy}-${mm}-${dd}`;
+            document.getElementById("due_date").setAttribute("min", minDate);
+        }
+
+        // Function to highlight tasks with deadlines within one day
+        function highlightUrgentTasks() {
+            const taskItems = document.querySelectorAll('.task-item');
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1);
+
+            taskItems.forEach(item => {
+                const dueDateText = item.querySelector('span').innerText.split(': ')[1];
+                const dueDate = new Date(dueDateText);
+
+                // Highlight tasks due today or tomorrow
+                if (dueDate <= tomorrow) {
+                    item.classList.add('urgent');
+                }
+            });
+        }
+    </script>
+</head>
+<body onload="setMinDate(); highlightUrgentTasks();">
+
+<h1>Ivi Cheyaliii</h1>
+
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul class="flashes">
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+
+<!-- Add Task Form -->
+<form action="/add_task" method="POST" class="task-form">
+    <input type="text" name="task" placeholder="Em Cheyali" required autocomplete="off">
+    <input type="date" name="due_date" id="due_date" required>
+    <button type="submit">Cheyali</button>
+</form>
+
+<!-- Task List -->
+<div class="task-list">
+    {% if tasks and tasks|length > 0 %}
+        <ul>
+        {% for task in tasks %}
+            <li class="task-item">
+                <div>
+                    <strong>{{ task.task }}</strong> 
+                    <span style="color: rgb(151, 176, 223);font-weight: bold;">- Due : {{ task.due_date.strftime('%Y-%m-%d') }}</span>
+                </div>
+                <form action="/remove_task" method="POST" style="display:inline;">
+                    <input type="hidden" name="task" value="{{ task.task }}">
+                    <button type="submit" onclick="return confirm('Are you sure you want to remove this task?');">Ipoindoo</button>
+                </form>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p class="no-tasks">No tasks in due</p>
+    {% endif %}
+</div>
+
+</body>
+</html>
