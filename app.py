@@ -74,5 +74,6 @@ def remove_task():
     return redirect('/')
 
 if __name__ == '__main__':
-     app.run(debug=True, port=10000)
+    app.run(host="0.0.0.0", port=5000)  # Change 127.0.0.1 to 0.0.0.0
+
 
